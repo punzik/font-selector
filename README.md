@@ -27,6 +27,7 @@ Font Selector is a simple GTK4 desktop application written in Rust for Linux (Xo
 If you use Nix, this repository already includes:
 
 - `shell.nix` for `nix-shell`
+- `font-selector.nix` for NixOS packaging
 
 ## Build and Run
 
@@ -42,6 +43,28 @@ cargo run
 ```bash
 nix-shell
 cargo run
+```
+
+## Install on NixOS
+
+You can install the app into `environment.systemPackages` using `font-selector.nix`.
+
+```nix
+{ config, pkgs, ... }:
+
+let
+  font-selector = pkgs.callPackage /path/to/font-selector/font-selector.nix {};
+in {
+  environment.systemPackages = with pkgs; [
+    font-selector
+  ];
+}
+```
+
+Then apply the configuration:
+
+```bash
+sudo nixos-rebuild switch
 ```
 
 ## Localization
@@ -84,3 +107,4 @@ Each translation file uses a simple `key = value` format.
 - `src/main.rs` - application UI and behavior
 - `i18n/*.lang` - translation files
 - `shell.nix` - development shell for `nix-shell`
+- `font-selector.nix` - Nix derivation for NixOS/system install

@@ -27,6 +27,7 @@ Font Selector — это простое настольное приложени�
 Если вы используете Nix, в репозитории есть:
 
 - `shell.nix` для `nix-shell`
+- `font-selector.nix` для упаковки в NixOS
 
 ## Сборка и запуск
 
@@ -42,6 +43,28 @@ cargo run
 ```bash
 nix-shell
 cargo run
+```
+
+## Установка в NixOS
+
+Программу можно добавить в `environment.systemPackages` через `font-selector.nix`.
+
+```nix
+{ config, pkgs, ... }:
+
+let
+  font-selector = pkgs.callPackage /path/to/font-selector/font-selector.nix {};
+in {
+  environment.systemPackages = with pkgs; [
+    font-selector
+  ];
+}
+```
+
+После этого примените конфигурацию:
+
+```bash
+sudo nixos-rebuild switch
 ```
 
 ## Локализация
@@ -84,3 +107,4 @@ LANG=de_DE.UTF-8 cargo run
 - `src/main.rs` - UI и логика приложения
 - `i18n/*.lang` - файлы переводов
 - `shell.nix` - dev-shell для `nix-shell`
+- `font-selector.nix` - derivation для установки в систему NixOS
