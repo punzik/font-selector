@@ -13,13 +13,13 @@
 
 rustPlatform.buildRustPackage rec {
   pname = "font-selector";
-  version = "0.1.0";
+  version = "0.2.0";
 
   src = fetchFromGitHub {
     owner = "punzik";
     repo = "font-selector";
     rev = "refs/tags/${version}";
-    hash = "sha256-8ZCxm3eCG4YytQvb0OJiEzAQL+aO5kyTjuyqBje3cZc=";
+    hash = "sha256-fVgFzMDVza7QKPp5aMg7NjVGFeI/N9gLH0FNq8UE5Pg=";
   };
 
   cargoHash = "sha256-1VTBajfyvnN5zEEtZj1g6pwc9yYEBq7/pM2ZTV+mdZA=";
