@@ -1,0 +1,9 @@
+/target/
+
+# Nix
+result
+result-*
+
+# Editor / local env
+.direnv/
+.envrc

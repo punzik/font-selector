@@ -1,0 +1,10 @@
+[package]
+name = "font-selector"
+version = "0.1.0"
+edition = "2021"
+
+[package.metadata]
+updated = "2026-02-16"
+
+[dependencies]
+gtk4 = "0.10.3"
