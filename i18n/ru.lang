@@ -2,4 +2,5 @@
 title = Font Selector
 filter_placeholder = Фильтр шрифтов
 size_tooltip = Размер шрифта (pt)
+copy_font_name = Копировать имя шрифта
 sample_text = Съешь ещё этих французских булок да выпей чаю

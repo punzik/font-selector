@@ -13,6 +13,7 @@ Font Selector is a simple GTK4 desktop application written in Rust for Linux (Xo
 - Keyboard navigation in the font list from the filter field (`Up`/`Down`)
 - Focus filter with `Ctrl+F`
 - Clear filter with `Esc`
+- Copy selected font name with context menu or `Ctrl+C`
 - Multi-line sample text editor
 - Live preview area with white canvas
 - Adjustable font size

@@ -2,4 +2,5 @@
 title = Sélecteur de polices
 filter_placeholder = Filtrer les polices
 size_tooltip = Taille de police (pt)
+copy_font_name = Copier le nom de la police
 sample_text = Portez ce vieux whisky au juge blond qui fume

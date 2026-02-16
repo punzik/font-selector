@@ -2,4 +2,5 @@
 title = Font Selector
 filter_placeholder = Filter fonts
 size_tooltip = Font size (pt)
+copy_font_name = Copy font name
 sample_text = The quick brown fox jumps over the lazy dog

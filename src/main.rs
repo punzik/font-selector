@@ -10,6 +10,7 @@ struct I18n {
     title: String,
     filter_placeholder: String,
     size_tooltip: String,
+    copy_font_name: String,
     sample_text: String,
 }
 
@@ -52,6 +53,7 @@ fn parse_i18n(source: &str) -> I18n {
         title: "Font Selector".to_string(),
         filter_placeholder: "Фильтр шрифтов".to_string(),
         size_tooltip: "Размер шрифта (pt)".to_string(),
+        copy_font_name: "Копировать имя шрифта".to_string(),
         sample_text: "Съешь ещё этих французских булок да выпей чаю".to_string(),
     };
 
@@ -70,6 +72,7 @@ fn parse_i18n(source: &str) -> I18n {
             "title" => i18n.title = value.to_string(),
             "filter_placeholder" => i18n.filter_placeholder = value.to_string(),
             "size_tooltip" => i18n.size_tooltip = value.to_string(),
+            "copy_font_name" => i18n.copy_font_name = value.to_string(),
             "sample_text" => i18n.sample_text = value.to_string(),
             _ => {}
         }
@@ -145,6 +148,24 @@ fn move_font_selection(font_list: &gtk::ListBox, step: i32) {
             index -= 1;
         }
     }
+}
+
+fn selected_font_family(font_list: &gtk::ListBox) -> Option<String> {
+    font_list
+        .selected_row()
+        .and_then(|row| row.child())
+        .and_then(|child| child.downcast::<gtk::Label>().ok())
+        .map(|label| label.text().to_string())
+}
+
+fn copy_selected_font_name_to_clipboard(font_list: &gtk::ListBox) {
+    let Some(font_name) = selected_font_family(font_list) else {
+        return;
+    };
+    let Some(display) = gdk::Display::default() else {
+        return;
+    };
+    display.clipboard().set_text(&font_name);
 }
 
 fn main() {
@@ -322,17 +343,59 @@ fn build_ui(app: &gtk::Application) {
         font_list.select_row(Some(&row));
     }
 
+    let copy_font_name = Rc::new({
+        let font_list = font_list.clone();
+        move || {
+            copy_selected_font_name_to_clipboard(&font_list);
+        }
+    });
+
+    {
+        let context_popover = gtk::Popover::new();
+        context_popover.set_has_arrow(true);
+        context_popover.set_autohide(true);
+        context_popover.set_parent(&font_list);
+
+        let menu_box = gtk::Box::new(gtk::Orientation::Vertical, 0);
+        let copy_button = gtk::Button::with_label(
+            format!("{} (Ctrl+C)", i18n.copy_font_name).as_str(),
+        );
+        copy_button.add_css_class("flat");
+        copy_button.set_halign(gtk::Align::Fill);
+        menu_box.append(&copy_button);
+        context_popover.set_child(Some(&menu_box));
+
+        {
+            let copy_font_name = copy_font_name.clone();
+            let context_popover = context_popover.clone();
+            copy_button.connect_clicked(move |_| {
+                copy_font_name();
+                context_popover.popdown();
+            });
+        }
+
+        let gesture = gtk::GestureClick::new();
+        gesture.set_button(3);
+        let list_for_gesture = font_list.clone();
+        gesture.connect_pressed(move |_, _, x, y| {
+            if let Some(row) = list_for_gesture.row_at_y(y as i32) {
+                list_for_gesture.select_row(Some(&row));
+            }
+            if list_for_gesture.selected_row().is_some() {
+                let rect = gdk::Rectangle::new(x as i32, y as i32, 1, 1);
+                context_popover.set_pointing_to(Some(&rect));
+                context_popover.popup();
+            }
+        });
+        font_list.add_controller(gesture);
+    }
+
     let update_font = Rc::new({
         let preview_label = preview_label.clone();
         let font_list = font_list.clone();
         let size_spin = size_spin.clone();
         move || {
-            let family = font_list
-                .selected_row()
-                .and_then(|row| row.child())
-                .and_then(|child| child.downcast::<gtk::Label>().ok())
-                .map(|label| label.text().to_string())
-                .unwrap_or_else(|| "Sans".to_string());
+            let family = selected_font_family(&font_list).unwrap_or_else(|| "Sans".to_string());
             let size = size_spin.value_as_int();
             apply_preview_font(&preview_label, &family, size);
         }
@@ -410,6 +473,21 @@ fn build_ui(app: &gtk::Application) {
             gtk::glib::Propagation::Proceed
         });
         filter_entry.add_controller(key);
+    }
+
+    {
+        let copy_font_name = copy_font_name.clone();
+        let key = gtk::EventControllerKey::new();
+        key.connect_key_pressed(move |_, key, _, state| {
+            if state.contains(gdk::ModifierType::CONTROL_MASK)
+                && (key == gdk::Key::c || key == gdk::Key::C)
+            {
+                copy_font_name();
+                return gtk::glib::Propagation::Stop;
+            }
+            gtk::glib::Propagation::Proceed
+        });
+        font_list.add_controller(key);
     }
 
     {
