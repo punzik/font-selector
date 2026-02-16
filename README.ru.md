@@ -1,6 +1,6 @@
 # Font Selector
 
-English version: `README.md`
+English version: [`README.md`](README.md)
 
 Font Selector — это простое настольное приложение на GTK4 и Rust для Linux (включая окружения с Xorg). Оно позволяет просматривать установленные в системе шрифты и видеть, как выглядит текст с разными гарнитурами и размером.
 

@@ -1,6 +1,6 @@
 # Font Selector
 
-Russian version: `README.ru.md`
+Russian version: [`README.ru.md`](README.ru.md)
 
 Font Selector is a simple GTK4 desktop application written in Rust for Linux (Xorg-compatible environments). It helps you browse installed system fonts and preview text with different font families and sizes.
 
